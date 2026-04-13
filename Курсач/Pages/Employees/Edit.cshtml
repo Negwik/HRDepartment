@@ -1,0 +1,108 @@
+﻿@page
+@model Курсач.Pages.Employees.EditModel
+@{
+    ViewData["Title"] = "Редактировать сотрудника";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square"></i> Редактировать сотрудника
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <input type="hidden" asp-for="Employee.Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Employee.LastName" class="form-label fw-bold"></label>
+                                <input asp-for="Employee.LastName" class="form-control" />
+                                <span asp-validation-for="Employee.LastName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Employee.FirstName" class="form-label fw-bold"></label>
+                                <input asp-for="Employee.FirstName" class="form-control" />
+                                <span asp-validation-for="Employee.FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Employee.MiddleName" class="form-label fw-bold"></label>
+                                <input asp-for="Employee.MiddleName" class="form-control" />
+                                <span asp-validation-for="Employee.MiddleName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.DepartmentId" class="form-label fw-bold"></label>
+                                <select asp-for="Employee.DepartmentId" asp-items="Model.Departments"
+                                        class="form-control">
+                                    <option value="">-- Выберите отдел --</option>
+                                </select>
+                                <span asp-validation-for="Employee.DepartmentId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.PositionId" class="form-label fw-bold"></label>
+                                <select asp-for="Employee.PositionId" asp-items="Model.Positions"
+                                        class="form-control">
+                                    <option value="">-- Выберите должность --</option>
+                                </select>
+                                <span asp-validation-for="Employee.PositionId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.Email" class="form-label fw-bold"></label>
+                                <input asp-for="Employee.Email" class="form-control" type="email" />
+                                <span asp-validation-for="Employee.Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.PhoneNumber" class="form-label fw-bold"></label>
+                                <input asp-for="Employee.PhoneNumber" class="form-control" />
+                                <span asp-validation-for="Employee.PhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.BirthDate" class="form-label fw-bold"></label>
+                                <input asp-for="Employee.BirthDate" class="form-control" type="date" />
+                                <span asp-validation-for="Employee.BirthDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.HireDate" class="form-label fw-bold"></label>
+                                <input asp-for="Employee.HireDate" class="form-control" type="date" />
+                                <span asp-validation-for="Employee.HireDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Employee.Salary" class="form-label fw-bold"></label>
+                            <input asp-for="Employee.Salary" class="form-control" type="number" step="1000" />
+                            <span asp-validation-for="Employee.Salary" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-page="./Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Назад
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-save"></i> Сохранить изменения
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

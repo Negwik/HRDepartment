@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Кадровая система</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Курсач.styles.css" asp-append-version="true" />
+</head>
+<body>
+    @{
+        var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+        string navbarGradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"; // фиолетовый по умолчанию
+
+        if (currentPage.StartsWith("/Departments"))
+        {
+            navbarGradient = "linear-gradient(135deg, #28a745 0%, #20c997 100%)"; // зеленый для отделов
+        }
+        else if (currentPage.StartsWith("/Positions"))
+        {
+            navbarGradient = "linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)"; // рыжий для должностей
+        }
+        else if (currentPage.StartsWith("/EmployeeQualification"))
+        {
+            navbarGradient = "linear-gradient(135deg, #17a2b8 0%, #138496 100%)"; // бирюзовый для квалификации
+        }
+    }
+
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark mb-3" style="background: @navbarGradient; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold fs-4" asp-page="/Index">
+                    <i class="bi bi-building"></i> Кадровая система
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(currentPage == "/Index" ? "active fw-bold" : "")"
+                               asp-page="/Index">
+                                <i class="bi bi-house-door"></i> Главная
+                            </a>
+                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white @(currentPage.StartsWith("/Employees") ? "active fw-bold" : "")"
+                                   asp-page="/Employees/Index">
+                                    <i class="bi bi-people"></i> Сотрудники
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white @(currentPage.StartsWith("/Departments") ? "active fw-bold" : "")"
+                                   asp-page="/Departments/Index">
+                                    <i class="bi bi-diagram-3"></i> Отделы
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white @(currentPage.StartsWith("/Positions") ? "active fw-bold" : "")"
+                                   asp-page="/Positions/Index">
+                                    <i class="bi bi-briefcase"></i> Должности
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white @(currentPage.StartsWith("/EmployeeQualification") ? "active fw-bold" : "")"
+                                   asp-page="/EmployeeQualification">
+                                    <i class="bi bi-calendar-check"></i> Квалификация
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle"></i> @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <span class="dropdown-item-text text-muted">
+                                            <i class="bi bi-envelope"></i> @User.Identity.Name
+                                        </span>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-page="/Auth/Logout" method="post" class="dropdown-item p-0">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right"></i> Выйти
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-page="/Auth/Login">
+                                    <i class="bi bi-box-arrow-in-right"></i> Вход
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Футер удален -->
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,145 @@
+﻿@page
+@model Курсач.Pages.Positions.IndexModel
+@{
+    ViewData["Title"] = "Должности";
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<div class="container-fluid px-4">
+    <div class="hero-section text-center py-5 mb-5" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); border-radius: 0 0 2rem 2rem; margin-top: -1.5rem;">
+        <div class="container">
+            <h1 class="display-4 fw-bold text-white mb-3">
+                <i class="bi bi-briefcase"></i> Должности компании
+            </h1>
+            <p class="lead text-white fs-5 mb-0">
+                Справочник должностей и профессий
+            </p>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h2 class="fw-bold text-warning mb-1">
+                <i class="bi bi-briefcase-fill"></i> Список должностей
+            </h2>
+            <p class="text-muted">Всего должностей: <strong class="text-warning fs-5">@Model.Positions.Count</strong></p>
+        </div>
+        <div class="d-flex gap-2">
+            <div class="input-group" style="width: 250px;">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="searchPosition" class="form-control border-start-0" placeholder="Поиск должности...">
+            </div>
+            <a asp-page="Create" class="btn btn-warning btn-lg">
+                <i class="bi bi-plus-circle"></i> Добавить должность
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Positions.Any())
+    {
+        <div class="alert alert-info text-center p-5">
+            <i class="bi bi-info-circle fs-1"></i>
+            <h4>Нет должностей</h4>
+            <p>Нажмите "Добавить должность" чтобы создать первую должность</p>
+        </div>
+    }
+    else
+    {
+        <div class="row" id="positionsContainer">
+            @foreach (var position in Model.Positions)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4 position-item">
+                    <div class="card shadow-lg border-0 rounded-4 h-100 position-card">
+                        <div class="card-body p-4 text-center">
+                            <div class="position-icon bg-warning bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 90px; height: 90px;">
+                                <i class="bi bi-briefcase fs-1 text-warning"></i>
+                            </div>
+                            <h5 class="card-title fw-bold mb-3 fs-4">
+                                @position.Title
+                            </h5>
+                            <div class="mt-2 pt-2 border-top">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <small class="text-muted d-block">
+                                            <i class="bi bi-people"></i> Сотрудников
+                                        </small>
+                                        <strong class="fs-2 text-warning">@position.EmployeeCount</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pb-4">
+                            <div class="d-flex gap-2">
+                                <a asp-page="Edit" asp-route-id="@position.Id" class="btn btn-warning flex-fill">
+                                    <i class="bi bi-pencil"></i> Редактировать
+                                </a>
+                                @if (isAdmin)
+                                {
+                                    <a asp-page="Delete" asp-route-id="@position.Id" class="btn btn-danger flex-fill">
+                                        <i class="bi bi-trash"></i> Удалить
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .position-card {
+        transition: all 0.3s ease;
+    }
+
+        .position-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+        }
+
+    .position-icon {
+        transition: all 0.3s ease;
+    }
+
+    .position-card:hover .position-icon {
+        transform: scale(1.1);
+    }
+
+    .btn {
+        transition: all 0.2s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .input-group {
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+        .input-group .form-control:focus {
+            box-shadow: none;
+            border-color: #ffc107;
+        }
+</style>
+
+<script>
+    document.getElementById('searchPosition')?.addEventListener('keyup', function () {
+        let searchText = this.value.toLowerCase();
+        let items = document.querySelectorAll('.position-item');
+
+        items.forEach(item => {
+            let text = item.textContent.toLowerCase();
+            if (text.includes(searchText)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>

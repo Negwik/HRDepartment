@@ -1,0 +1,58 @@
+﻿@page
+@model Курсач.Pages.Positions.DeleteModel
+@{
+    ViewData["Title"] = "Удалить должность";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Удаление должности
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.Position.Employees != null && Model.Position.Employees.Any())
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Внимание!</strong> Эта должность есть у сотрудников.
+                            Сначала измените должность у всех сотрудников.
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a asp-page="./Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Назад
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Внимание!</strong> Вы уверены, что хотите удалить должность <strong>@Model.Position.Title</strong>? Это действие нельзя отменить.
+                        </div>
+
+                        <dl class="row">
+                            <dt class="col-sm-4">Название должности</dt>
+                            <dd class="col-sm-8">@Model.Position.Title</dd>
+                        </dl>
+
+                        <form method="post">
+                            <input type="hidden" asp-for="Position.Id" />
+                            <div class="d-flex justify-content-between">
+                                <a asp-page="./Index" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Отмена
+                                </a>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i> Удалить
+                                </button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

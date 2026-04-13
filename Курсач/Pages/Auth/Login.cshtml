@@ -1,0 +1,168 @@
+﻿@page
+@model Курсач.Pages.Auth.LoginModel
+@{
+    ViewData["Title"] = "Вход в систему";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Кадровая система</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-control:focus {
+            border-color: #ffffff;
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
+            background: white !important;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(110%);
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.3) !important;
+        }
+
+        .card {
+            transition: transform 0.3s ease;
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(15px);
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+            }
+
+        .form-check-input:checked {
+            background-color: #ffffff;
+            border-color: #ffffff;
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
+        }
+
+        input::placeholder {
+            color: rgba(0,0,0,0.5) !important;
+        }
+
+        .form-control {
+            background: rgba(255,255,255,0.9) !important;
+            border: none;
+        }
+
+        .card-footer {
+            background: rgba(0,0,0,0.1) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-5">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <!-- Заголовок -->
+                    <div class="card-header text-white text-center py-4" style="background: transparent; border: none;">
+                        <div class="mb-3">
+                            <i class="bi bi-building fs-1"></i>
+                        </div>
+                        <h3 class="mb-0 fw-bold">Кадровая система</h3>
+                        <p class="mb-0 mt-2 small opacity-75">Информационная система отдела кадров</p>
+                    </div>
+
+                    <div class="card-body p-4 p-lg-5">
+                        <form method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                            <div class="mb-4">
+                                <label asp-for="Input.Email" class="form-label fw-semibold text-white">
+                                    <i class="bi bi-person"></i> Логин
+                                </label>
+                                <input asp-for="Input.Email" class="form-control form-control-lg"
+                                       style="background: rgba(255,255,255,0.9); border: none;"
+                                       placeholder="Admin или User" autocomplete="username" />
+                                <span asp-validation-for="Input.Email" class="text-white small"></span>
+                                <small class="text-white-50 d-block mt-1">
+                                    <i class="bi bi-info-circle"></i> Введите: Admin или User
+                                </small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Input.Password" class="form-label fw-semibold text-white">
+                                    <i class="bi bi-lock"></i> Пароль
+                                </label>
+                                <input asp-for="Input.Password" class="form-control form-control-lg"
+                                       style="background: rgba(255,255,255,0.9); border: none;"
+                                       type="password" placeholder="••••••••" autocomplete="current-password" />
+                                <span asp-validation-for="Input.Password" class="text-white small"></span>
+                                <small class="text-white-50 d-block mt-1">
+                                    <i class="bi bi-info-circle"></i> Пароль: 1
+                                </small>
+                            </div>
+
+                            <div class="mb-4 form-check">
+                                <input asp-for="Input.RememberMe" class="form-check-input" style="background: white;" />
+                                <label asp-for="Input.RememberMe" class="form-check-label text-white">
+                                    Запомнить меня
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn w-100 btn-lg mb-3 text-white fw-bold"
+                                    style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px);">
+                                <i class="bi bi-box-arrow-in-right"></i> Войти
+                            </button>
+                        </form>
+
+                        <!-- Подсказка с тестовыми данными -->
+                        <div class="mt-4 rounded-3 p-3" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-info-circle-fill text-white me-2"></i>
+                                <strong class="text-white">Тестовые данные для входа:</strong>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="p-2 rounded" style="background: rgba(255,255,255,0.1);">
+                                        <small class="d-block text-white-50">Администратор</small>
+                                        <code class="text-white" style="background: transparent; font-size: 0.7rem;">Admin</code>
+                                        <br />
+                                        <code class="text-white" style="background: transparent; font-size: 0.7rem;">1</code>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-2 rounded" style="background: rgba(255,255,255,0.1);">
+                                        <small class="d-block text-white-50">Пользователь</small>
+                                        <code class="text-white" style="background: transparent; font-size: 0.7rem;">User</code>
+                                        <br />
+                                        <code class="text-white" style="background: transparent; font-size: 0.7rem;">1</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer text-center py-3" style="background: rgba(0,0,0,0.1); border: none;">
+                        <small class="text-white opacity-75">
+                            <i class="bi bi-shield-check"></i> Безопасный вход
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html>

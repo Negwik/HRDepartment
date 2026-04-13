@@ -1,0 +1,171 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Главная";
+}
+
+<div class="hero-section text-center py-5 mb-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0 0 2rem 2rem; margin-top: -1.5rem;">
+    <div class="container">
+        <h1 class="display-3 fw-bold text-white mb-4 animate__animated animate__fadeInDown">
+            <i class="bi bi-building"></i> Кадровая система
+        </h1>
+        <p class="lead text-white fs-4 mb-4 animate__animated animate__fadeInUp">
+            Управление сотрудниками, отделами и должностями в одном месте
+        </p>
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <a asp-page="/Auth/Login" class="btn btn-light btn-lg px-4 animate__animated animate__fadeInUp">
+                <i class="bi bi-box-arrow-in-right"></i> Войти в систему
+            </a>
+        }
+        else
+        {
+            <a asp-page="/Employees/Index" class="btn btn-light btn-lg px-4 animate__animated animate__fadeInUp">
+                <i class="bi bi-people"></i> Перейти к сотрудникам
+            </a>
+        }
+    </div>
+</div>
+
+<div class="container">
+    <!-- Статистика -->
+    <div class="row mb-5">
+        <div class="col-md-4 mb-3">
+            <div class="stats-card card text-center p-4 shadow-sm border-0">
+                <div class="stats-icon bg-primary bg-opacity-10 rounded-circle mx-auto mb-3">
+                    <i class="bi bi-people fs-1 text-primary"></i>
+                </div>
+                <h3 class="display-4 fw-bold text-primary">@Model.EmployeesCount</h3>
+                <p class="text-muted mb-0">Всего сотрудников</p>
+                <a asp-page="/Employees/Index" class="btn btn-outline-primary mt-3">Подробнее →</a>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="stats-card card text-center p-4 shadow-sm border-0">
+                <div class="stats-icon bg-success bg-opacity-10 rounded-circle mx-auto mb-3">
+                    <i class="bi bi-diagram-3 fs-1 text-success"></i>
+                </div>
+                <h3 class="display-4 fw-bold text-success">@Model.DepartmentsCount</h3>
+                <p class="text-muted mb-0">Отделов компании</p>
+                <a asp-page="/Departments/Index" class="btn btn-outline-success mt-3">Подробнее →</a>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="stats-card card text-center p-4 shadow-sm border-0">
+                <div class="stats-icon bg-warning bg-opacity-10 rounded-circle mx-auto mb-3">
+                    <i class="bi bi-briefcase fs-1 text-warning"></i>
+                </div>
+                <h3 class="display-4 fw-bold text-warning">@Model.PositionsCount</h3>
+                <p class="text-muted mb-0">Должностей</p>
+                <a asp-page="/Positions/Index" class="btn btn-outline-warning mt-3">Подробнее →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Преимущества системы -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">Возможности системы</h2>
+            <p class="text-muted">Все необходимые инструменты для управления персоналом</p>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="feature-card card h-100 p-4 text-center border-0 shadow-sm">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-person-plus fs-1 text-primary"></i>
+                </div>
+                <h5 class="fw-bold">Управление сотрудниками</h5>
+                <p class="text-muted">Добавление, редактирование и удаление информации о сотрудниках</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="feature-card card h-100 p-4 text-center border-0 shadow-sm">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-diagram-3 fs-1 text-success"></i>
+                </div>
+                <h5 class="fw-bold">Структура компании</h5>
+                <p class="text-muted">Управление отделами и их структурой</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="feature-card card h-100 p-4 text-center border-0 shadow-sm">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-bar-chart fs-1 text-warning"></i>
+                </div>
+                <h5 class="fw-bold">Аналитика</h5>
+                <p class="text-muted">Статистика и отчеты по сотрудникам</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Информация о системе -->
+    <div class="row">
+        <div class="col-12">
+            <div class="info-card bg-gradient-primary text-white p-5 rounded-4 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="fw-bold mb-3">
+                            <i class="bi bi-stars"></i> Готовы начать?
+                        </h3>
+                        <p class="mb-3 fs-5">
+                            Добавьте первых сотрудников и настройте структуру компании
+                        </p>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a asp-page="/Employees/Create" class="btn btn-light btn-lg">
+                                <i class="bi bi-plus-circle"></i> Добавить сотрудника
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-page="/Auth/Login" class="btn btn-light btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Войти для начала работы
+                            </a>
+                        }
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="bi bi-robot display-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подключаем анимации -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+<style>
+    .stats-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 1rem;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+        }
+
+    .stats-icon {
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+    }
+
+    .feature-card {
+        transition: all 0.3s ease;
+        border-radius: 1rem;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+        }
+
+    .feature-icon i {
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon i {
+        transform: scale(1.1);
+    }
+</style>

@@ -1,0 +1,60 @@
+﻿@page
+@model Курсач.Pages.Auth.LogoutModel
+@{
+    ViewData["Title"] = "Выход";
+}
+
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-4 text-center overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-header py-5" style="background: transparent; border: none;">
+                    <div class="mb-3">
+                        <i class="bi bi-box-arrow-right fs-1 text-white"></i>
+                    </div>
+                    <h3 class="mb-0 mt-2 fw-bold text-white">Выход из системы</h3>
+                    <p class="text-white opacity-75 mt-2">Вы уверены, что хотите выйти?</p>
+                </div>
+                <div class="card-body p-5 pt-0">
+                    <div class="mb-4">
+                        <i class="bi bi-question-circle-fill text-white fs-1 mb-3 d-block" style="text-shadow: 0 2px 5px rgba(0,0,0,0.2);"></i>
+                        <p class="text-white fs-5">Вы будете перенаправлены на страницу входа</p>
+                    </div>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="/" class="btn btn-lg px-4 text-white" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px);">
+                            <i class="bi bi-arrow-left"></i> Отмена
+                        </a>
+                        <form method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-lg px-4 text-white" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px);">
+                                <i class="bi bi-box-arrow-right"></i> Выйти
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-footer text-center py-3" style="background: rgba(0,0,0,0.1); border: none;">
+                    <small class="text-white opacity-75">
+                        <i class="bi bi-shield-check"></i> Безопасный выход
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(110%);
+        transition: all 0.3s ease;
+        background: rgba(255,255,255,0.3) !important;
+    }
+
+    .card {
+        transition: transform 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+</style>

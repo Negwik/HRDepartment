@@ -1,0 +1,56 @@
+﻿@page
+@model Курсач.Pages.Employees.DeleteModel
+@{
+    ViewData["Title"] = "Удалить сотрудника";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Удаление сотрудника
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Внимание!</strong> Вы уверены, что хотите удалить этого сотрудника? Это действие нельзя отменить.
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-4">ФИО</dt>
+                        <dd class="col-sm-8">
+                            @Model.Employee.LastName @Model.Employee.FirstName @Model.Employee.MiddleName
+                        </dd>
+
+                        <dt class="col-sm-4">Отдел</dt>
+                        <dd class="col-sm-8">@(Model.Employee.Department?.Name ?? "—")</dd>
+
+                        <dt class="col-sm-4">Должность</dt>
+                        <dd class="col-sm-8">@(Model.Employee.Position?.Title ?? "—")</dd>
+
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">@Model.Employee.Email</dd>
+
+                        <dt class="col-sm-4">Зарплата</dt>
+                        <dd class="col-sm-8">@Model.Employee.Salary.ToString("N0") ₽</dd>
+                    </dl>
+
+                    <form method="post">
+                        <input type="hidden" asp-for="Employee.Id" />
+                        <div class="d-flex justify-content-between">
+                            <a asp-page="./Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Отмена
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Удалить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

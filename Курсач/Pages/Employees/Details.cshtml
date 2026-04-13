@@ -1,0 +1,139 @@
+﻿@page
+@model Курсач.Pages.Employees.DetailsModel
+@{
+    ViewData["Title"] = "Детали сотрудника";
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-badge"></i> Карточка сотрудника
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Фамилия</dt>
+                        <dd class="col-sm-8">@Model.Employee.LastName</dd>
+
+                        <dt class="col-sm-4">Имя</dt>
+                        <dd class="col-sm-8">@Model.Employee.FirstName</dd>
+
+                        <dt class="col-sm-4">Отчество</dt>
+                        <dd class="col-sm-8">@(Model.Employee.MiddleName ?? "—")</dd>
+
+                        <dt class="col-sm-4">Дата рождения</dt>
+                        <dd class="col-sm-8">@Model.Employee.BirthDate.ToString("dd.MM.yyyy")</dd>
+
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">@Model.Employee.Email</dd>
+
+                        <dt class="col-sm-4">Телефон</dt>
+                        <dd class="col-sm-8">@(Model.Employee.PhoneNumber ?? "—")</dd>
+
+                        <dt class="col-sm-4">Дата приема</dt>
+                        <dd class="col-sm-8">@Model.Employee.HireDate.ToString("dd.MM.yyyy")</dd>
+
+                        <dt class="col-sm-4">Зарплата</dt>
+                        <dd class="col-sm-8">@Model.Employee.Salary.ToString("N0") ₽</dd>
+
+                        <dt class="col-sm-4">Отдел</dt>
+                        <dd class="col-sm-8">@(Model.Employee.Department?.Name ?? "—")</dd>
+
+                        <dt class="col-sm-4">Должность</dt>
+                        <dd class="col-sm-8">@(Model.Employee.Position?.Title ?? "—")</dd>
+                    </dl>
+
+                    <!-- Отпуск -->
+                    <hr />
+                    <h5><i class="bi bi-sun"></i> Отпуск</h5>
+                    @if (Model.Employee.VacationStartDate.HasValue && Model.Employee.VacationEndDate.HasValue)
+                    {
+                        var today = DateTime.Today;
+                        var isOnVacation = today >= Model.Employee.VacationStartDate.Value && today <= Model.Employee.VacationEndDate.Value;
+                        <div class="alert @(isOnVacation ? "alert-warning" : "alert-info")">
+                            @if (isOnVacation)
+                            {
+                                <strong>Сотрудник в отпуске!</strong>
+
+                                <br />
+                            }
+                            с @Model.Employee.VacationStartDate.Value.ToString("dd.MM.yyyy") по @Model.Employee.VacationEndDate.Value.ToString("dd.MM.yyyy")
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary">Нет запланированного отпуска</div>
+                    }
+
+                    <!-- Курсы повышения квалификации -->
+                    <hr />
+                    <h5><i class="bi bi-mortarboard"></i> Повышение квалификации</h5>
+                    @if (Model.Employee.Qualifications != null && Model.Employee.Qualifications.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Курс</th>
+                                        <th>Даты</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var q in Model.Employee.Qualifications)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@q.CourseName</strong>
+                                                @if (!string.IsNullOrEmpty(q.Organization))
+                                                {
+                                                    <br />
+
+                                                    <small class="text-muted">@q.Organization</small>
+                                                }
+                                            </td>
+                                            <td>@q.StartDate.ToString("dd.MM.yyyy") - @q.EndDate.ToString("dd.MM.yyyy")</td>
+                                            <td>
+                                                @{
+                                                    string badgeClass = q.Status switch
+                                                    {
+                                                        Курсач.Models.QualificationStatus.Planned => "bg-secondary",
+                                                        Курсач.Models.QualificationStatus.InProgress => "bg-primary",
+                                                        Курсач.Models.QualificationStatus.Completed => "bg-success",
+                                                        _ => "bg-danger"
+                                                    };
+                                                }
+                                                <span class="badge @badgeClass">@q.Status</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary">Нет записей о повышении квалификации</div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        @if (isAdmin)
+                        {
+                            <a asp-page="./Edit" asp-route-id="@Model.Employee.Id" class="btn btn-warning">
+                                <i class="bi bi-pencil"></i> Редактировать
+                            </a>
+                        }
+                        <a asp-page="./Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Назад к списку
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
