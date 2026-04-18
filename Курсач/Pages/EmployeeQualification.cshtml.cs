@@ -40,8 +40,8 @@ namespace Курсач.Pages
             }
         }
 
-        // Обновление отпуска
-        public async Task<IActionResult> OnPostUpdateVacationAsync(int employeeId, DateTime? startDate, DateTime? endDate)
+        // Обновление отпуска с типом
+        public async Task<IActionResult> OnPostUpdateVacationAsync(int employeeId, DateTime? startDate, DateTime? endDate, VacationType vacationType)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
             if (employee != null)
@@ -55,6 +55,8 @@ namespace Курсач.Pages
                     employee.VacationEndDate = DateTime.SpecifyKind(endDate.Value, DateTimeKind.Utc);
                 else
                     employee.VacationEndDate = null;
+
+                employee.VacationType = vacationType;
 
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Данные отпуска обновлены";
@@ -70,6 +72,7 @@ namespace Курсач.Pages
             {
                 employee.VacationStartDate = null;
                 employee.VacationEndDate = null;
+                employee.VacationType = VacationType.Annual;
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Даты отпуска очищены";
             }

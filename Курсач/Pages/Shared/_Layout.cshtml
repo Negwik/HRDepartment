@@ -8,6 +8,21 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Курсач.styles.css" asp-append-version="true" />
+    <style>
+        /* Стили для фиксированного уведомления */
+        .fixed-alert-top {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            min-width: 300px;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            pointer-events: auto;
+        }
+    </style>
 </head>
 <body>
     @{
@@ -25,6 +40,14 @@
         else if (currentPage.StartsWith("/EmployeeQualification"))
         {
             navbarGradient = "linear-gradient(135deg, #17a2b8 0%, #138496 100%)"; // бирюзовый для квалификации
+        }
+        else if (currentPage.StartsWith("/Admin/Users"))
+        {
+            navbarGradient = "linear-gradient(135deg, #dc3545 0%, #c82333 100%)"; // красный для пользователей
+        }
+        else if (currentPage.StartsWith("/Analytics"))
+        {
+            navbarGradient = "linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%)"; // фиолетово-розовый для аналитики
         }
     }
 
@@ -54,6 +77,15 @@
                                     <i class="bi bi-people"></i> Сотрудники
                                 </a>
                             </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white @(currentPage.StartsWith("/Admin/Users") ? "active fw-bold" : "")"
+                                       asp-page="/Admin/Users">
+                                        <i class="bi bi-people-fill"></i> Пользователи
+                                    </a>
+                                </li>
+                            }
                             <li class="nav-item">
                                 <a class="nav-link text-white @(currentPage.StartsWith("/Departments") ? "active fw-bold" : "")"
                                    asp-page="/Departments/Index">
@@ -69,7 +101,13 @@
                             <li class="nav-item">
                                 <a class="nav-link text-white @(currentPage.StartsWith("/EmployeeQualification") ? "active fw-bold" : "")"
                                    asp-page="/EmployeeQualification">
-                                    <i class="bi bi-calendar-check"></i> Квалификация
+                                    <i class="bi bi-calendar-check"></i> Квалификация и отпуск
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white @(currentPage.StartsWith("/Analytics") ? "active fw-bold" : "")"
+                                   asp-page="/Analytics/Index">
+                                    <i class="bi bi-graph-up"></i> Аналитика
                                 </a>
                             </li>
                         }
@@ -112,18 +150,62 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <!-- Футер удален -->
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // Функция показа уведомлений БЕЗ ПЕРЕМЕЩЕНИЯ СТРАНИЦЫ
+        function showAlert(message, type) {
+            var alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show fixed-alert-top text-center';
+            alertDiv.setAttribute('role', 'alert');
+
+            var icon = '';
+            if (type === 'success') icon = 'check-circle-fill';
+            else if (type === 'danger') icon = 'exclamation-triangle-fill';
+            else icon = 'info-circle-fill';
+
+            alertDiv.innerHTML = '<i class="bi bi-' + icon + '"></i> ' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+            document.body.appendChild(alertDiv);
+
+            // Сохраняем позицию скролла
+            var scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Автоматическое скрытие через 3 секунды
+            setTimeout(function () {
+                alertDiv.style.opacity = '0';
+                alertDiv.style.transition = 'opacity 0.3s';
+                setTimeout(function () {
+                    if (alertDiv.parentNode) alertDiv.remove();
+                    // Восстанавливаем позицию скролла
+                    window.scrollTo(0, scrollPosition);
+                }, 300);
+            }, 3000);
+        }
+
+        // Показываем уведомления из TempData
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>showAlert("@TempData["SuccessMessage"]", "success");</text>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>showAlert("@TempData["ErrorMessage"]", "danger");</text>
+        }
+        @if (TempData["InfoMessage"] != null)
+        {
+            <text>showAlert("@TempData["InfoMessage"]", "info");</text>
+        }
+    </script>
 </body>
 </html>

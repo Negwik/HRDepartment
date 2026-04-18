@@ -7,7 +7,6 @@
 }
 
 <style>
-    /* Фиксированное уведомление поверх контента */
     .fixed-alert {
         position: fixed;
         top: 70px;
@@ -18,33 +17,88 @@
         max-width: 500px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
+
+    .hero-section {
+        border-radius: 0 0 2rem 2rem;
+        margin-top: -1.5rem;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .card-header {
+        border-bottom: none;
+    }
+
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+
+    .rounded-top-4 {
+        border-top-left-radius: 1rem !important;
+        border-top-right-radius: 1rem !important;
+    }
+
+    .btn {
+        transition: all 0.2s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .card:hover {
+        transform: translateY(-3px);
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    select.form-select {
+        cursor: pointer;
+    }
+
+    #employeeSelect option {
+        padding: 8px 12px;
+    }
+
+    .modal-content {
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @@keyframes modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
 </style>
 
-<!-- Уведомление фиксированное, не сдвигает контент -->
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show fixed-alert text-center" role="alert">
+    <div class="alert alert-success alert-dismissible fade show fixed-alert text-center" role="alert" id="successAlert">
         <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show fixed-alert text-center" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show fixed-alert text-center" role="alert" id="errorAlert">
         <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-@if (TempData["InfoMessage"] != null)
-{
-    <div class="alert alert-info alert-dismissible fade show fixed-alert text-center" role="alert">
-        <i class="bi bi-info-circle-fill"></i> @TempData["InfoMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
 <div class="container-fluid px-4">
-    <div class="hero-section text-center py-4 mb-4" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); border-radius: 0 0 2rem 2rem; margin-top: -1.5rem;">
+    <div class="hero-section text-center py-4 mb-4" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
         <div class="container">
             <h1 class="display-5 fw-bold text-white mb-2">
                 <i class="bi bi-calendar-check"></i> Квалификация и отпуск
@@ -66,11 +120,14 @@
                     <input type="text" id="searchEmployee" class="form-control mb-3 rounded-3" placeholder="Введите фамилию, имя или email..." />
                     <select id="employeeSelect" class="form-select rounded-3" style="min-height: 200px;" size="5" onchange="location.href='?employeeId=' + this.value">
                         <option value="">-- Выберите сотрудника --</option>
-                        @foreach (var emp in Model.EmployeesList)
+                        @if (Model.EmployeesList != null)
                         {
-                            <option value="@emp.Id" selected="@(Model.SelectedEmployeeId == emp.Id)" data-name="@emp.LastName @emp.FirstName @emp.MiddleName @emp.Email">
-                                @emp.LastName @emp.FirstName @emp.MiddleName - @emp.Department?.Name
-                            </option>
+                            @foreach (var emp in Model.EmployeesList)
+                            {
+                                <option value="@emp.Id" selected="@(Model.SelectedEmployeeId == emp.Id)" data-name="@emp.LastName @emp.FirstName @emp.MiddleName @emp.Email">
+                                    @emp.LastName @emp.FirstName @emp.MiddleName - @emp.Department?.Name
+                                </option>
+                            }
                         }
                     </select>
                 </div>
@@ -80,7 +137,7 @@
 
     @if (Model.SelectedEmployee != null)
     {
-        <!-- Информация о выбранном сотруднике сверху -->
+        <!-- Информация о выбранном сотруднике -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm border-0 rounded-4" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
@@ -118,8 +175,15 @@
 
                                     <br />
                                 }
+                                <span>Тип: <strong>@GetDisplayName(Model.SelectedEmployee.VacationType)</strong></span><br />
                                 <span>с <strong>@Model.SelectedEmployee.VacationStartDate.Value.ToString("dd.MM.yyyy")</strong></span><br />
                                 <span>по <strong>@Model.SelectedEmployee.VacationEndDate.Value.ToString("dd.MM.yyyy")</strong></span>
+                                @{
+                                    var start = Model.SelectedEmployee.VacationStartDate.Value;
+                                    var end = Model.SelectedEmployee.VacationEndDate.Value;
+                                    var days = (end - start).Days + 1;
+                                }
+                                <br /><span class="text-muted">Длительность: @days дн.</span>
                             </div>
                         }
                         else
@@ -132,8 +196,19 @@
 
                         @if (isAdmin)
                         {
-                            <form method="post" asp-page-handler="UpdateVacation" class="mt-3">
+                            <form method="post" asp-page-handler="UpdateVacation" class="mt-3" id="vacationForm">
                                 <input type="hidden" name="employeeId" value="@Model.SelectedEmployee.Id" />
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Тип отпуска:</label>
+                                    <select name="vacationType" class="form-select rounded-3">
+                                        @foreach (VacationType type in Enum.GetValues(typeof(VacationType)))
+                                        {
+                                            <option value="@((int)type)" selected="@(Model.SelectedEmployee.VacationType == type)">
+                                                @GetDisplayName(type)
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Начало отпуска:</label>
                                     <input type="date" name="startDate" class="form-control rounded-3" value="@(Model.SelectedEmployee.VacationStartDate?.ToString("yyyy-MM-dd"))" />
@@ -146,10 +221,9 @@
                                     <button type="submit" class="btn btn-primary flex-fill rounded-3">
                                         <i class="bi bi-save"></i> Сохранить
                                     </button>
-                                    <a asp-page-handler="ClearVacation" asp-route-employeeId="@Model.SelectedEmployee.Id"
-                                       class="btn btn-danger rounded-3" onclick="return confirm('Очистить даты отпуска?')">
+                                    <button type="button" class="btn btn-danger rounded-3" data-bs-toggle="modal" data-bs-target="#clearVacationModal">
                                         <i class="bi bi-trash"></i> Очистить
-                                    </a>
+                                    </button>
                                 </div>
                             </form>
                         }
@@ -164,7 +238,6 @@
                         <h4 class="mb-0"><i class="bi bi-mortarboard"></i> Повышение квалификации</h4>
                     </div>
                     <div class="card-body p-4">
-                        <!-- Список курсов -->
                         @if (Model.SelectedEmployee.Qualifications != null && Model.SelectedEmployee.Qualifications.Any())
                         {
                             <div class="table-responsive">
@@ -213,10 +286,9 @@
                                                         <button type="button" class="btn btn-sm btn-warning rounded-3" onclick="openEditModal(@q.Id, '@q.CourseName.Replace("'", "\\'")', '@q.StartDate.ToString("yyyy-MM-dd")', '@q.EndDate.ToString("yyyy-MM-dd")', '@(q.Organization?.Replace("'", "\\'") ?? "")', @((int)q.Status))">
                                                             <i class="bi bi-pencil"></i> Изменить
                                                         </button>
-                                                        <a asp-page-handler="DeleteQualification" asp-route-qId="@q.Id" asp-route-employeeId="@Model.SelectedEmployee.Id"
-                                                           class="btn btn-sm btn-danger rounded-3 mt-1" onclick="return confirm('Удалить курс?')">
+                                                        <button type="button" class="btn btn-sm btn-danger rounded-3 mt-1" data-bs-toggle="modal" data-bs-target="#deleteQualificationModal" data-id="@q.Id" data-name="@q.CourseName">
                                                             <i class="bi bi-trash"></i> Удалить
-                                                        </a>
+                                                        </button>
                                                     }
                                                     else
                                                     {
@@ -285,16 +357,84 @@
     }
 </div>
 
-<!-- Модальное окно для редактирования -->
-<div class="modal fade" id="editQualificationModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-4">
-            <div class="modal-header" style="background: linear-gradient(135deg, #fd7e14 0%, #dc3545 100%);">
-                <h5 class="modal-title text-white"><i class="bi bi-pencil-square"></i> Редактировать курс</h5>
+<!-- Модальное окно для очистки отпуска -->
+<div class="modal fade" id="clearVacationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle bg-white bg-opacity-25 p-2">
+                        <i class="bi bi-exclamation-triangle-fill text-white fs-4"></i>
+                    </div>
+                    <h5 class="modal-title text-white fw-bold">Подтверждение действия</h5>
+                </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="post" asp-page-handler="EditQualification" id="editForm">
-                <div class="modal-body">
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-calendar-x fs-1 text-danger mb-3 d-block"></i>
+                <h5 class="fw-bold mb-2">Очистка дат отпуска</h5>
+                <p class="text-muted mb-0">Вы уверены, что хотите очистить даты отпуска?</p>
+                <p class="text-danger small mt-2">Это действие нельзя отменить.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
+                <button type="button" class="btn btn-secondary rounded-3 px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Отмена
+                </button>
+                <a asp-page-handler="ClearVacation" asp-route-employeeId="@Model.SelectedEmployee?.Id" class="btn btn-danger rounded-3 px-4" id="clearVacationLink">
+                    <i class="bi bi-trash"></i> Очистить
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для удаления курса -->
+<div class="modal fade" id="deleteQualificationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle bg-white bg-opacity-25 p-2">
+                        <i class="bi bi-exclamation-triangle-fill text-white fs-4"></i>
+                    </div>
+                    <h5 class="modal-title text-white fw-bold">Подтверждение удаления</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-bookmark-x fs-1 text-danger mb-3 d-block"></i>
+                <h5 class="fw-bold mb-2">Удаление курса</h5>
+                <p class="text-muted mb-0">Вы уверены, что хотите удалить курс:</p>
+                <p class="fw-bold text-danger mt-2" id="deleteCourseName"></p>
+                <p class="text-danger small mt-2">Это действие нельзя отменить.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
+                <button type="button" class="btn btn-secondary rounded-3 px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Отмена
+                </button>
+                <a id="deleteCourseLink" class="btn btn-danger rounded-3 px-4">
+                    <i class="bi bi-trash"></i> Удалить
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования курса -->
+<div class="modal fade" id="editQualificationModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #fd7e14 0%, #dc3545 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle bg-white bg-opacity-25 p-2">
+                        <i class="bi bi-pencil-square text-white fs-4"></i>
+                    </div>
+                    <h5 class="modal-title text-white fw-bold">Редактировать курс</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="EditQualification">
+                <div class="modal-body p-4">
                     <input type="hidden" name="qId" id="editQId" />
                     <input type="hidden" name="employeeId" value="@Model.SelectedEmployee?.Id" />
                     <div class="mb-3">
@@ -325,83 +465,82 @@
                         </select>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Отмена</button>
-                    <button type="submit" class="btn btn-primary rounded-3">Сохранить</button>
+                <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
+                    <button type="button" class="btn btn-secondary rounded-3 px-4" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg"></i> Отмена
+                    </button>
+                    <button type="submit" class="btn btn-primary rounded-3 px-4">
+                        <i class="bi bi-save"></i> Сохранить
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<style>
-    .hero-section {
-        border-radius: 0 0 2rem 2rem;
-        margin-top: -1.5rem;
+@functions {
+    public static string GetDisplayName(Enum value)
+    {
+        var field = value.GetType().GetField(value.ToString());
+        var attribute = field?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false).FirstOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
+        return attribute?.Name ?? value.ToString();
     }
-
-    /* Убираем белые углы у карточек */
-    .card {
-        transition: all 0.3s ease;
-        overflow: hidden;
-    }
-
-    .card-header {
-        border-bottom: none;
-    }
-
-    .rounded-4 {
-        border-radius: 1rem !important;
-    }
-
-    .rounded-top-4 {
-        border-top-left-radius: 1rem !important;
-        border-top-right-radius: 1rem !important;
-    }
-
-    .btn {
-        transition: all 0.2s ease;
-    }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-    .card:hover {
-        transform: translateY(-3px);
-    }
-
-    .table th, .table td {
-        vertical-align: middle;
-    }
-
-    select.form-select {
-        cursor: pointer;
-    }
-
-    #employeeSelect option {
-        padding: 8px 12px;
-    }
-</style>
+}
 
 <script>
-    // Поиск сотрудника в выпадающем списке
-    document.getElementById('searchEmployee')?.addEventListener('keyup', function () {
-        let searchText = this.value.toLowerCase();
-        let options = document.querySelectorAll('#employeeSelect option');
+    // Сохраняем позицию скролла перед отправкой формы
+    var scrollPosition = 0;
 
-        options.forEach(option => {
-            if (option.value === "") return;
-            let text = option.getAttribute('data-name')?.toLowerCase() || option.textContent.toLowerCase();
-            if (text.includes(searchText)) {
-                option.style.display = '';
-            } else {
-                option.style.display = 'none';
-            }
+    // Функция для сохранения позиции скролла
+    function saveScrollPosition() {
+        scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+    }
+
+    // Функция для восстановления позиции скролла
+    function restoreScrollPosition() {
+        setTimeout(function () {
+            window.scrollTo(0, scrollPosition);
+        }, 100);
+    }
+
+    // Сохраняем позицию перед отправкой формы отпуска
+    var vacationForm = document.getElementById('vacationForm');
+    if (vacationForm) {
+        vacationForm.addEventListener('submit', function () {
+            saveScrollPosition();
         });
+    }
+
+    // Сохраняем позицию перед кликом по ссылке очистки
+    var clearVacationLink = document.getElementById('clearVacationLink');
+    if (clearVacationLink) {
+        clearVacationLink.addEventListener('click', function () {
+            saveScrollPosition();
+        });
+    }
+
+    // Восстанавливаем позицию после загрузки страницы
+    window.addEventListener('load', function () {
+        restoreScrollPosition();
     });
 
-    // Открытие модального окна с заполнением данных
+    // Поиск сотрудника в выпадающем списке
+    document.getElementById('searchEmployee')?.addEventListener('keyup', function () {
+        var searchText = this.value.toLowerCase();
+        var options = document.querySelectorAll('#employeeSelect option');
+
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value === "") continue;
+            var text = options[i].getAttribute('data-name')?.toLowerCase() || options[i].textContent.toLowerCase();
+            if (text.indexOf(searchText) !== -1) {
+                options[i].style.display = '';
+            } else {
+                options[i].style.display = 'none';
+            }
+        }
+    });
+
+    // Открытие модального окна редактирования курса
     function openEditModal(id, courseName, startDate, endDate, organization, status) {
         document.getElementById('editQId').value = id;
         document.getElementById('editCourseName').value = courseName;
@@ -414,15 +553,51 @@
         modal.show();
     }
 
-    // Автоматическое скрытие уведомлений через 3 секунды
+    // Удаление курса с подтверждением
+    var deleteModal = document.getElementById('deleteQualificationModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var courseId = button.getAttribute('data-id');
+            var courseName = button.getAttribute('data-name');
+
+            var deleteLink = document.getElementById('deleteCourseLink');
+            var courseNameSpan = document.getElementById('deleteCourseName');
+
+            courseNameSpan.textContent = courseName;
+            deleteLink.href = '?handler=DeleteQualification&qId=' + courseId + '&employeeId=' + @(Model.SelectedEmployee?.Id ?? 0);
+
+            // Сохраняем позицию перед удалением
+            saveScrollPosition();
+        });
+    }
+
+    // Сохраняем позицию перед отправкой формы добавления курса
+    var addCourseForms = document.querySelectorAll('form[asp-page-handler="AddQualification"]');
+    for (var i = 0; i < addCourseForms.length; i++) {
+        addCourseForms[i].addEventListener('submit', function () {
+            saveScrollPosition();
+        });
+    }
+
+    // Сохраняем позицию перед отправкой формы редактирования курса
+    var editForm = document.getElementById('editForm');
+    if (editForm) {
+        editForm.addEventListener('submit', function () {
+            saveScrollPosition();
+        });
+    }
+
+    // Автоматическое скрытие уведомлений с восстановлением позиции
     setTimeout(function () {
         var alerts = document.querySelectorAll('.fixed-alert');
-        alerts.forEach(function (alert) {
-            alert.style.opacity = '0';
-            alert.style.transition = 'opacity 0.3s';
-            setTimeout(function () {
-                if (alert.parentNode) alert.remove();
-            }, 300);
-        });
+        for (var i = 0; i < alerts.length; i++) {
+            alerts[i].style.opacity = '0';
+            alerts[i].style.transition = 'opacity 0.3s';
+            setTimeout(function (alert) {
+                if (alert && alert.parentNode) alert.remove();
+                restoreScrollPosition();
+            }, 300, alerts[i]);
+        }
     }, 3000);
 </script>

@@ -19,7 +19,7 @@ namespace Курсач.Pages.Positions
         }
 
         [BindProperty]
-        public Position Position { get; set; } = default!;
+        public Position Position { get; set; } = new Position();
 
         public List<EmployeeInPosition> Employees { get; set; } = new();
 
@@ -33,7 +33,7 @@ namespace Курсач.Pages.Positions
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
+            if (id == null || id == 0)
             {
                 return NotFound();
             }
@@ -51,15 +51,17 @@ namespace Курсач.Pages.Positions
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            if (!ModelState.IsValid)
+            // Получаем должность из базы данных
+            var positionToUpdate = await _context.Positions.FindAsync(id);
+            if (positionToUpdate == null)
             {
-                await LoadData();
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(Position).State = EntityState.Modified;
+            // Обновляем только название
+            positionToUpdate.Title = Position.Title;
 
             try
             {
@@ -69,7 +71,7 @@ namespace Курсач.Pages.Positions
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PositionExists(Position.Id))
+                if (!PositionExists(id))
                 {
                     return NotFound();
                 }
@@ -80,46 +82,42 @@ namespace Курсач.Pages.Positions
             }
         }
 
-        // Обработка перемещения сотрудника
-        public async Task<IActionResult> OnPostMoveEmployeeAsync()
+        // Обработка перевода сотрудника
+        public async Task<IActionResult> OnPostMoveEmployeeAsync(int id)
         {
             if (SelectedEmployeeId == null || TargetPositionId == null)
             {
-                TempData["ErrorMessage"] = "Выберите сотрудника и должность для перемещения";
-                await LoadData();
-                return Page();
+                TempData["ErrorMessage"] = "Выберите сотрудника и должность для перевода";
+                return RedirectToPage(new { id });
             }
 
             var employee = await _context.Employees.FindAsync(SelectedEmployeeId);
             if (employee == null)
             {
                 TempData["ErrorMessage"] = "Сотрудник не найден";
-                await LoadData();
-                return Page();
+                return RedirectToPage(new { id });
             }
 
             var targetPosition = await _context.Positions.FindAsync(TargetPositionId);
             if (targetPosition == null)
             {
                 TempData["ErrorMessage"] = "Должность назначения не найдена";
-                await LoadData();
-                return Page();
+                return RedirectToPage(new { id });
             }
 
-            // Перемещаем сотрудника
+            // Переводим сотрудника
             employee.PositionId = TargetPositionId.Value;
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Сотрудник {employee.LastName} {employee.FirstName} переведен на должность \"{targetPosition.Title}\"";
 
-            // Обновляем данные
-            await LoadData();
-            return Page();
+            // Перенаправляем обратно на страницу редактирования текущей должности
+            return RedirectToPage(new { id });
         }
 
         private async Task LoadData()
         {
-            if (Position != null)
+            if (Position != null && Position.Id > 0)
             {
                 // Загружаем сотрудников с этой должностью
                 var employeesQuery = await _context.Employees
@@ -141,7 +139,7 @@ namespace Курсач.Pages.Positions
                     .ThenBy(e => e.FirstName)
                     .ToList();
 
-                // Загружаем другие должности для перемещения
+                // Загружаем другие должности для перевода
                 OtherPositions = new SelectList(
                     await _context.Positions
                         .Where(p => p.Id != Position.Id)

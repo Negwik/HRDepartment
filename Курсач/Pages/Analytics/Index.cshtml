@@ -1,0 +1,275 @@
+﻿@page
+@using Курсач.Models
+@model Курсач.Pages.Analytics.IndexModel
+@{
+    ViewData["Title"] = "Аналитика";
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<div class="container-fluid px-4">
+    <div class="hero-section text-center py-4 mb-4" style="background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%); border-radius: 0 0 2rem 2rem; margin-top: -1.5rem;">
+        <div class="container">
+            <h1 class="display-5 fw-bold text-white mb-2">
+                <i class="bi bi-graph-up"></i> Аналитика
+            </h1>
+            <p class="lead text-white mb-0">
+                Статистика и отчеты по сотрудникам, отделам и должностям
+            </p>
+        </div>
+    </div>
+
+    <!-- Общая статистика -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card shadow-lg border-0 rounded-4 text-center p-3">
+                <div class="card-body">
+                    <i class="bi bi-people fs-1 text-primary"></i>
+                    <h2 class="mt-2 mb-0">@Model.TotalEmployees</h2>
+                    <p class="text-muted">Всего сотрудников</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-lg border-0 rounded-4 text-center p-3">
+                <div class="card-body">
+                    <i class="bi bi-building fs-1 text-success"></i>
+                    <h2 class="mt-2 mb-0">@Model.TotalDepartments</h2>
+                    <p class="text-muted">Всего отделов</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-lg border-0 rounded-4 text-center p-3">
+                <div class="card-body">
+                    <i class="bi bi-briefcase fs-1 text-warning"></i>
+                    <h2 class="mt-2 mb-0">@Model.TotalPositions</h2>
+                    <p class="text-muted">Всего должностей</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-lg border-0 rounded-4 text-center p-3">
+                <div class="card-body">
+                    <i class="bi bi-currency-ruble fs-1 text-danger"></i>
+                    <h2 class="mt-2 mb-0">@Model.AverageSalary.ToString("N0")</h2>
+                    <p class="text-muted">Средняя зарплата</p>
+                    <hr class="my-2" />
+                    <h5 class="text-success mb-0">@Model.TotalSalaryCost.ToString("N0") ₽</h5>
+                    <small class="text-muted">Общий фонд ЗП</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Сотрудники по отделам -->
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4 h-100">
+                <div class="card-header text-white rounded-top-4 p-3" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-bottom: none;">
+                    <h4 class="mb-0"><i class="bi bi-diagram-3"></i> Сотрудники по отделам</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.EmployeesByDepartment.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Отдел</th>
+                                        <th class="text-end">Количество</th>
+                                        <th class="text-end">% от всех</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.EmployeesByDepartment)
+                                    {
+                                        <tr>
+                                            <td>@item.DepartmentName</td>
+                                            <td class="text-end fw-bold">@item.Count</td>
+                                            <td class="text-end">@item.Percentage.ToString("F1")%</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <th>Итого</th>
+                                        <th class="text-end">@Model.TotalEmployees</th>
+                                        <th class="text-end">100%</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info text-center">
+                            <i class="bi bi-info-circle"></i> Нет данных
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Сотрудники по должностям -->
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4 h-100">
+                <div class="card-header text-white rounded-top-4 p-3" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); border-bottom: none;">
+                    <h4 class="mb-0"><i class="bi bi-briefcase"></i> Сотрудники по должностям</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.EmployeesByPosition.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Должность</th>
+                                        <th class="text-end">Количество</th>
+                                        <th class="text-end">% от всех</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.EmployeesByPosition)
+                                    {
+                                        <tr>
+                                            <td>@item.PositionTitle</td>
+                                            <td class="text-end fw-bold">@item.Count</td>
+                                            <td class="text-end">@item.Percentage.ToString("F1")%</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <th>Итого</th>
+                                        <th class="text-end">@Model.TotalEmployees</th>
+                                        <th class="text-end">100%</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info text-center">
+                            <i class="bi bi-info-circle"></i> Нет данных
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Распределение зарплат -->
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4 h-100">
+                <div class="card-header text-white rounded-top-4 p-3" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); border-bottom: none;">
+                    <h4 class="mb-0"><i class="bi bi-currency-ruble"></i> Распределение зарплат</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.SalaryDistribution.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Диапазон зарплат</th>
+                                        <th class="text-end">Количество</th>
+                                        <th class="text-end">% от всех</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.SalaryDistribution)
+                                    {
+                                        <tr>
+                                            <td>@item.Range</td>
+                                            <td class="text-end fw-bold">@item.Count</td>
+                                            <td class="text-end">@item.Percentage.ToString("F1")%</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info text-center">
+                            <i class="bi bi-info-circle"></i> Нет данных
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Возрастная структура сотрудников -->
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4 h-100">
+                <div class="card-header text-white rounded-top-4 p-3" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); border-bottom: none;">
+                    <h4 class="mb-0"><i class="bi bi-calendar-range"></i> Возрастная структура</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.AgeDistribution.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Возрастная группа</th>
+                                        <th class="text-end">Количество</th>
+                                        <th class="text-end">% от всех</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.AgeDistribution)
+                                    {
+                                        <tr>
+                                            <td>@item.AgeRange</td>
+                                            <td class="text-end fw-bold">@item.Count</td>
+                                            <td class="text-end">@item.Percentage.ToString("F1")%</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <th>Итого</th>
+                                        <th class="text-end">@Model.TotalEmployees</th>
+                                        <th class="text-end">100%</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info text-center">
+                            <i class="bi bi-info-circle"></i> Нет данных
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        border-radius: 0 0 2rem 2rem;
+        margin-top: -1.5rem;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+
+    .rounded-top-4 {
+        border-top-left-radius: 1rem !important;
+        border-top-right-radius: 1rem !important;
+    }
+</style>

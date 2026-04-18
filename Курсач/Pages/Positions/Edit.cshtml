@@ -1,4 +1,5 @@
 ﻿@page
+@using Курсач.Models
 @model Курсач.Pages.Positions.EditModel
 @{
     ViewData["Title"] = "Редактировать должность";
@@ -14,9 +15,7 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form method="post">
-                        <input type="hidden" asp-for="Position.Id" />
-
+                    <form method="post" asp-route-id="@Model.Position.Id">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="mb-3">
@@ -68,16 +67,16 @@
                                     @foreach (var employee in Model.Employees)
                                     {
                                         <tr>
-                                            <td>
+                                            <td class="py-2">
                                                 <strong>@employee.FullName</strong>
                                             </td>
-                                            <td>@employee.Department</td>
-                                            <td>
+                                            <td class="py-2">@employee.Department</td>
+                                            <td class="py-2">
                                                 <a href="mailto:@employee.Email" class="text-decoration-none">
                                                     <i class="bi bi-envelope"></i> @employee.Email
                                                 </a>
                                             </td>
-                                            <td>
+                                            <td class="py-2">
                                                 <button type="button" class="btn btn-sm btn-outline-primary"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#moveEmployeeModal"
@@ -108,10 +107,10 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" asp-page-handler="MoveEmployee">
+            <form method="post" asp-page-handler="MoveEmployee" asp-route-id="@Model.Position.Id">
                 <div class="modal-body">
                     <input type="hidden" id="selectedEmployeeId" name="SelectedEmployeeId" />
-                    <p>Выберите новую должность для сотрудника:</p>
+                    <p>Выберите должность для перевода сотрудника:</p>
                     <div class="alert alert-info">
                         <strong id="employeeName"></strong>
                     </div>

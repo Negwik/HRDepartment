@@ -232,3 +232,4 @@ C:\Users\МАКС\Desktop\Курсач\Курсач\obj\Debug\net8.0\refint\Ку
 C:\Users\МАКС\Desktop\Курсач\Курсач\obj\Debug\net8.0\Курсач.pdb
 C:\Users\МАКС\Desktop\Курсач\Курсач\obj\Debug\net8.0\Курсач.genruntimeconfig.cache
 C:\Users\МАКС\Desktop\Курсач\Курсач\obj\Debug\net8.0\ref\Курсач.dll
+C:\Users\МАКС\Desktop\Курсач\Курсач\obj\Debug\net8.0\Курсач.sourcelink.json

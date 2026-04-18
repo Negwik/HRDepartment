@@ -14,9 +14,7 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form method="post">
-                        <input type="hidden" asp-for="Department.Id" />
-
+                    <form method="post" asp-route-id="@Model.Department.Id">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="mb-3">
@@ -108,7 +106,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" asp-page-handler="MoveEmployee">
+            <form method="post" asp-page-handler="MoveEmployee" asp-route-id="@Model.Department.Id">
                 <div class="modal-body">
                     <input type="hidden" id="selectedEmployeeId" name="SelectedEmployeeId" />
                     <p>Выберите отдел для перемещения сотрудника:</p>

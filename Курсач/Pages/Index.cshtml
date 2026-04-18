@@ -2,6 +2,7 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Главная";
+    var isAdmin = User.IsInRole("Admin");
 }
 
 <div class="hero-section text-center py-5 mb-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0 0 2rem 2rem; margin-top: -1.5rem;">
@@ -97,38 +98,57 @@
         </div>
     </div>
 
-    <!-- Информация о системе -->
-    <div class="row">
-        <div class="col-12">
-            <div class="info-card bg-gradient-primary text-white p-5 rounded-4 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h3 class="fw-bold mb-3">
-                            <i class="bi bi-stars"></i> Готовы начать?
-                        </h3>
-                        <p class="mb-3 fs-5">
-                            Добавьте первых сотрудников и настройте структуру компании
-                        </p>
-                        @if (User.Identity.IsAuthenticated)
-                        {
+    <!-- Информация о системе - показываем только для Admin -->
+    @if (User.Identity.IsAuthenticated && isAdmin)
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="info-card bg-gradient-primary text-white p-5 rounded-4 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h3 class="fw-bold mb-3">
+                                <i class="bi bi-stars"></i> Готовы начать?
+                            </h3>
+                            <p class="mb-3 fs-5">
+                                Добавьте первых сотрудников и настройте структуру компании
+                            </p>
                             <a asp-page="/Employees/Create" class="btn btn-light btn-lg">
                                 <i class="bi bi-plus-circle"></i> Добавить сотрудника
                             </a>
-                        }
-                        else
-                        {
-                            <a asp-page="/Auth/Login" class="btn btn-light btn-lg">
-                                <i class="bi bi-box-arrow-in-right"></i> Войти для начала работы
-                            </a>
-                        }
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <i class="bi bi-robot display-1"></i>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <i class="bi bi-robot display-1"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
+    else if (!User.Identity.IsAuthenticated)
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="info-card bg-gradient-primary text-white p-5 rounded-4 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h3 class="fw-bold mb-3">
+                                <i class="bi bi-stars"></i> Готовы начать?
+                            </h3>
+                            <p class="mb-3 fs-5">
+                                Добавьте первых сотрудников и настройте структуру компании
+                            </p>
+                            <a asp-page="/Auth/Login" class="btn btn-light btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Войти для начала работы
+                            </a>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <i class="bi bi-robot display-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 <!-- Подключаем анимации -->

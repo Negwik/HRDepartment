@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Курсач.Data;
@@ -11,9 +12,11 @@ using Курсач.Data;
 namespace Курсач.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260417221517_AddVacationType")]
+    partial class AddVacationType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,11 +183,6 @@ namespace Курсач.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -193,11 +191,6 @@ namespace Курсач.Migrations
 
                     b.Property<string>("ChildrenInfo")
                         .HasColumnType("text");
-
-                    b.Property<string>("Citizenship")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
@@ -213,7 +206,6 @@ namespace Курсач.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("EducationalInstitution")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -228,7 +220,6 @@ namespace Курсач.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("GraduationYear")
-                        .IsRequired()
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("HireDate")
@@ -257,7 +248,6 @@ namespace Курсач.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Specialty")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 

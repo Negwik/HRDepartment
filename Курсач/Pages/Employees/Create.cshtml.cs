@@ -26,6 +26,13 @@ namespace Курсач.Pages.Employees
 
         public async Task<IActionResult> OnGetAsync()
         {
+            // Устанавливаем значения по умолчанию
+            Employee.BirthDate = DateTime.Today;
+            Employee.HireDate = DateTime.Today;
+            Employee.Citizenship = "Российская Федерация";
+            Employee.Salary = 0;
+            // Education и MaritalStatus остаются без значения (будут выбраны пользователем)
+
             await LoadSelectLists();
             return Page();
         }
@@ -47,6 +54,11 @@ namespace Курсач.Pages.Employees
             if (Employee.HireDate != default)
             {
                 Employee.HireDate = DateTime.SpecifyKind(Employee.HireDate, DateTimeKind.Utc);
+            }
+
+            if (Employee.GraduationYear.HasValue)
+            {
+                Employee.GraduationYear = DateTime.SpecifyKind(Employee.GraduationYear.Value, DateTimeKind.Utc);
             }
 
             _context.Employees.Add(Employee);

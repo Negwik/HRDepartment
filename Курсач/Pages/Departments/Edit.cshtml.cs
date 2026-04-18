@@ -19,7 +19,7 @@ namespace Курсач.Pages.Departments
         }
 
         [BindProperty]
-        public Department Department { get; set; } = default!;
+        public Department Department { get; set; } = new Department();
 
         public List<EmployeeInDepartment> Employees { get; set; } = new();
 
@@ -33,7 +33,7 @@ namespace Курсач.Pages.Departments
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
+            if (id == null || id == 0)
             {
                 return NotFound();
             }
@@ -51,15 +51,17 @@ namespace Курсач.Pages.Departments
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            if (!ModelState.IsValid)
+            // Получаем отдел из базы данных
+            var departmentToUpdate = await _context.Departments.FindAsync(id);
+            if (departmentToUpdate == null)
             {
-                await LoadData();
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(Department).State = EntityState.Modified;
+            // Обновляем только название
+            departmentToUpdate.Name = Department.Name;
 
             try
             {
@@ -69,7 +71,7 @@ namespace Курсач.Pages.Departments
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DepartmentExists(Department.Id))
+                if (!DepartmentExists(id))
                 {
                     return NotFound();
                 }
@@ -81,29 +83,26 @@ namespace Курсач.Pages.Departments
         }
 
         // Обработка перемещения сотрудника
-        public async Task<IActionResult> OnPostMoveEmployeeAsync()
+        public async Task<IActionResult> OnPostMoveEmployeeAsync(int id)
         {
             if (SelectedEmployeeId == null || TargetDepartmentId == null)
             {
                 TempData["ErrorMessage"] = "Выберите сотрудника и отдел для перемещения";
-                await LoadData();
-                return Page();
+                return RedirectToPage(new { id });
             }
 
             var employee = await _context.Employees.FindAsync(SelectedEmployeeId);
             if (employee == null)
             {
                 TempData["ErrorMessage"] = "Сотрудник не найден";
-                await LoadData();
-                return Page();
+                return RedirectToPage(new { id });
             }
 
             var targetDepartment = await _context.Departments.FindAsync(TargetDepartmentId);
             if (targetDepartment == null)
             {
                 TempData["ErrorMessage"] = "Отдел назначения не найден";
-                await LoadData();
-                return Page();
+                return RedirectToPage(new { id });
             }
 
             // Перемещаем сотрудника
@@ -112,14 +111,13 @@ namespace Курсач.Pages.Departments
 
             TempData["SuccessMessage"] = $"Сотрудник {employee.LastName} {employee.FirstName} перемещен в отдел \"{targetDepartment.Name}\"";
 
-            // Обновляем данные
-            await LoadData();
-            return Page();
+            // Перенаправляем обратно на страницу редактирования текущего отдела
+            return RedirectToPage(new { id });
         }
 
         private async Task LoadData()
         {
-            if (Department != null)
+            if (Department != null && Department.Id > 0)
             {
                 // Загружаем сотрудников этого отдела
                 var employeesQuery = await _context.Employees

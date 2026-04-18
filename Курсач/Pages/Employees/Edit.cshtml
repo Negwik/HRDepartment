@@ -1,4 +1,5 @@
 ﻿@page
+@using Курсач.Models
 @model Курсач.Pages.Employees.EditModel
 @{
     ViewData["Title"] = "Редактировать сотрудника";
@@ -6,7 +7,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card shadow">
                 <div class="card-header bg-warning">
                     <h4 class="mb-0">
@@ -17,78 +18,177 @@
                     <form method="post">
                         <input type="hidden" asp-for="Employee.Id" />
 
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <ul class="nav nav-tabs mb-3" id="employeeTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">
+                                    <i class="bi bi-person"></i> Личные данные
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="education-tab" data-bs-toggle="tab" data-bs-target="#education" type="button" role="tab">
+                                    <i class="bi bi-mortarboard"></i> Образование
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="family-tab" data-bs-toggle="tab" data-bs-target="#family" type="button" role="tab">
+                                    <i class="bi bi-heart"></i> Семья
+                                </button>
+                            </li>
+                        </ul>
 
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label asp-for="Employee.LastName" class="form-label fw-bold"></label>
-                                <input asp-for="Employee.LastName" class="form-control" />
-                                <span asp-validation-for="Employee.LastName" class="text-danger"></span>
+                        <div class="tab-content">
+                            <!-- Вкладка: Личные данные -->
+                            <div class="tab-pane fade show active" id="personal" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label asp-for="Employee.LastName" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.LastName" class="form-control" />
+                                        <span asp-validation-for="Employee.LastName" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label asp-for="Employee.FirstName" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.FirstName" class="form-control" />
+                                        <span asp-validation-for="Employee.FirstName" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label asp-for="Employee.MiddleName" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.MiddleName" class="form-control" />
+                                        <span asp-validation-for="Employee.MiddleName" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.BirthDate" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.BirthDate" class="form-control" type="date" />
+                                        <span asp-validation-for="Employee.BirthDate" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.Email" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.Email" class="form-control" type="email" />
+                                        <span asp-validation-for="Employee.Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.PhoneNumber" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.PhoneNumber" class="form-control" />
+                                        <span asp-validation-for="Employee.PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.Citizenship" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.Citizenship" class="form-control" placeholder="Российская Федерация" />
+                                        <span asp-validation-for="Employee.Citizenship" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Employee.Address" class="form-label fw-bold"></label>
+                                    <textarea asp-for="Employee.Address" class="form-control" rows="3" placeholder="Индекс, город, улица, дом, квартира"></textarea>
+                                    <span asp-validation-for="Employee.Address" class="text-danger"></span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.HireDate" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.HireDate" class="form-control" type="date" />
+                                        <span asp-validation-for="Employee.HireDate" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.Salary" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.Salary" class="form-control" type="number" step="1" value="@Model.Employee.Salary.ToString("F0")" />
+                                        <span asp-validation-for="Employee.Salary" class="text-danger"></span>
+                                        <small class="text-muted">Введите зарплату в рублях</small>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.DepartmentId" class="form-label fw-bold"></label>
+                                        <select asp-for="Employee.DepartmentId" asp-items="Model.Departments" class="form-control">
+                                            <option value="">-- Выберите отдел --</option>
+                                        </select>
+                                        <span asp-validation-for="Employee.DepartmentId" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.PositionId" class="form-label fw-bold"></label>
+                                        <select asp-for="Employee.PositionId" asp-items="Model.Positions" class="form-control">
+                                            <option value="">-- Выберите должность --</option>
+                                        </select>
+                                        <span asp-validation-for="Employee.PositionId" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.Disability" class="form-label fw-bold"></label>
+                                        <select asp-for="Employee.Disability" class="form-control" asp-items="Html.GetEnumSelectList<DisabilityStatus>()">
+                                            <option value="">-- Выберите статус инвалидности --</option>
+                                        </select>
+                                        <span asp-validation-for="Employee.Disability" class="text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label asp-for="Employee.FirstName" class="form-label fw-bold"></label>
-                                <input asp-for="Employee.FirstName" class="form-control" />
-                                <span asp-validation-for="Employee.FirstName" class="text-danger"></span>
+
+                            <!-- Вкладка: Образование -->
+                            <div class="tab-pane fade" id="education" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.Education" class="form-label fw-bold"></label>
+                                        <select asp-for="Employee.Education" class="form-control" asp-items="Html.GetEnumSelectList<EducationLevel>()">
+                                            <option value="">-- Выберите образование --</option>
+                                        </select>
+                                        <span asp-validation-for="Employee.Education" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.GraduationYear" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.GraduationYear" class="form-control" type="date" />
+                                        <span asp-validation-for="Employee.GraduationYear" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Employee.Specialty" class="form-label fw-bold"></label>
+                                    <input asp-for="Employee.Specialty" class="form-control" placeholder="Например: Программист, Бухгалтер..." />
+                                    <span asp-validation-for="Employee.Specialty" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Employee.EducationalInstitution" class="form-label fw-bold"></label>
+                                    <input asp-for="Employee.EducationalInstitution" class="form-control" placeholder="Название учебного заведения" />
+                                    <span asp-validation-for="Employee.EducationalInstitution" class="text-danger"></span>
+                                </div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label asp-for="Employee.MiddleName" class="form-label fw-bold"></label>
-                                <input asp-for="Employee.MiddleName" class="form-control" />
-                                <span asp-validation-for="Employee.MiddleName" class="text-danger"></span>
+
+                            <!-- Вкладка: Семья -->
+                            <div class="tab-pane fade" id="family" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.MaritalStatus" class="form-label fw-bold"></label>
+                                        <select asp-for="Employee.MaritalStatus" class="form-control" asp-items="Html.GetEnumSelectList<MaritalStatus>()">
+                                            <option value="">-- Выберите семейное положение --</option>
+                                        </select>
+                                        <span asp-validation-for="Employee.MaritalStatus" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Employee.ChildrenCount" class="form-label fw-bold"></label>
+                                        <input asp-for="Employee.ChildrenCount" class="form-control" type="number" min="0" max="20" />
+                                        <span asp-validation-for="Employee.ChildrenCount" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Employee.ChildrenInfo" class="form-label fw-bold"></label>
+                                    <textarea asp-for="Employee.ChildrenInfo" class="form-control" rows="4"
+                                              placeholder="ФИО детей, дата рождения (совершеннолетний/несовершеннолетний)"></textarea>
+                                    <small class="text-muted">Пример: Иванов Иван Иванович, 15.03.2010 (несовершеннолетний); Петрова Анна Сергеевна, 01.01.2000 (совершеннолетний)</small>
+                                    <span asp-validation-for="Employee.ChildrenInfo" class="text-danger"></span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Employee.DepartmentId" class="form-label fw-bold"></label>
-                                <select asp-for="Employee.DepartmentId" asp-items="Model.Departments"
-                                        class="form-control">
-                                    <option value="">-- Выберите отдел --</option>
-                                </select>
-                                <span asp-validation-for="Employee.DepartmentId" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Employee.PositionId" class="form-label fw-bold"></label>
-                                <select asp-for="Employee.PositionId" asp-items="Model.Positions"
-                                        class="form-control">
-                                    <option value="">-- Выберите должность --</option>
-                                </select>
-                                <span asp-validation-for="Employee.PositionId" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Employee.Email" class="form-label fw-bold"></label>
-                                <input asp-for="Employee.Email" class="form-control" type="email" />
-                                <span asp-validation-for="Employee.Email" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Employee.PhoneNumber" class="form-label fw-bold"></label>
-                                <input asp-for="Employee.PhoneNumber" class="form-control" />
-                                <span asp-validation-for="Employee.PhoneNumber" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Employee.BirthDate" class="form-label fw-bold"></label>
-                                <input asp-for="Employee.BirthDate" class="form-control" type="date" />
-                                <span asp-validation-for="Employee.BirthDate" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Employee.HireDate" class="form-label fw-bold"></label>
-                                <input asp-for="Employee.HireDate" class="form-control" type="date" />
-                                <span asp-validation-for="Employee.HireDate" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Employee.Salary" class="form-label fw-bold"></label>
-                            <input asp-for="Employee.Salary" class="form-control" type="number" step="1000" />
-                            <span asp-validation-for="Employee.Salary" class="text-danger"></span>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between mt-4">
                             <a asp-page="./Index" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Назад
                             </a>

@@ -6,27 +6,26 @@
 }
 
 <div class="container-fluid px-4">
-    <!-- Адаптивная шапка -->
-    <div class="hero-section text-center py-3 py-md-4 py-lg-5 mb-4 mb-md-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0 0 2rem 2rem; margin-top: -1.5rem;">
+    <div class="hero-section text-center py-5 mb-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0 0 2rem 2rem; margin-top: -1.5rem;">
         <div class="container">
-            <h1 class="fw-bold text-white mb-2 mb-md-3" style="font-size: 1.8rem;">
+            <h1 class="display-4 fw-bold text-white mb-3">
                 <i class="bi bi-people-fill"></i> Сотрудники компании
             </h1>
-            <p class="lead text-white mb-0" style="font-size: 1.1rem;">
+            <p class="lead text-white fs-5 mb-0">
                 Управление кадровым составом организации
             </p>
         </div>
     </div>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h2 class="fw-bold text-primary mb-1" style="font-size: 1.3rem;">
+            <h2 class="fw-bold text-primary mb-1">
                 <i class="bi bi-person-badge"></i> Список сотрудников
             </h2>
-            <p class="text-muted mb-0">Всего сотрудников: <strong class="text-primary fs-5">@Model.Employees.Count</strong></p>
+            <p class="text-muted">Всего сотрудников: <strong class="text-primary fs-5">@Model.Employees.Count</strong></p>
         </div>
-        <div class="d-flex flex-column flex-sm-row gap-2">
-            <div class="input-group" style="width: 100%; min-width: 200px;">
+        <div class="d-flex gap-2">
+            <div class="input-group" style="width: 280px;">
                 <span class="input-group-text bg-white border-end-0">
                     <i class="bi bi-search"></i>
                 </span>
@@ -34,7 +33,7 @@
             </div>
             @if (isAdmin)
             {
-                <a asp-page="Create" class="btn btn-primary btn-lg px-4" style="white-space: nowrap;">
+                <a asp-page="Create" class="btn btn-primary btn-lg px-4">
                     <i class="bi bi-plus-circle"></i> Добавить сотрудника
                 </a>
             }
@@ -54,7 +53,7 @@
         <div class="card shadow-lg border-0 rounded-4">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="employeesTable" style="min-width: 900px;">
+                    <table class="table align-middle mb-0 w-100" id="employeesTable">
                         <thead style="background-color: #212529; color: white;">
                             <tr>
                                 <th class="py-3 px-2">ФИО</th>
@@ -70,14 +69,21 @@
                         <tbody>
                             @foreach (var employee in Model.Employees)
                             {
-                                <tr class="employee-row">
+                                var hireDate = employee.HireDate;
+                                var today = DateTime.Today;
+                                var years = today.Year - hireDate.Year;
+                                var months = today.Month - hireDate.Month;
+                                if (months < 0) { years--; months += 12; }
+                                var experienceText = years > 0 ? $"{years} г. {months} мес." : $"{months} мес.";
+
+                                <tr>
                                     <td class="px-2 py-3">
-                                        <div class="d-flex align-items-start">
-                                            <div class="avatar-circle me-2 flex-shrink-0 mt-1">
-                                                <i class="bi bi-person-circle text-primary"></i>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-2 flex-shrink-0">
+                                                <i class="bi bi-person-circle text-primary fs-5"></i>
                                             </div>
                                             <div>
-                                                <div class="fw-semibold" style="word-break: break-word;">@employee.LastName @employee.FirstName</div>
+                                                <div class="fw-semibold">@employee.LastName @employee.FirstName</div>
                                                 @if (!string.IsNullOrEmpty(employee.MiddleName))
                                                 {
                                                     <div class="small text-muted">@employee.MiddleName</div>
@@ -87,24 +93,24 @@
                                         </div>
                                     </td>
                                     <td class="px-2 py-3">
-                                        <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill d-inline-block" style="max-width: 150px; word-break: break-word;">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill">
                                             <i class="bi bi-building"></i> @(employee.Department?.Name ?? "Не указан")
                                         </span>
                                     </td>
                                     <td class="px-2 py-3">
-                                        <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill d-inline-block" style="max-width: 150px; word-break: break-word;">
+                                        <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
                                             <i class="bi bi-briefcase"></i> @(employee.Position?.Title ?? "Не указана")
                                         </span>
                                     </td>
                                     <td class="px-2 py-3">
-                                        <a href="mailto:@employee.Email" class="text-decoration-none" style="word-break: break-all;">
+                                        <a href="mailto:@employee.Email" class="text-decoration-none">
                                             <i class="bi bi-envelope"></i> @employee.Email
                                         </a>
                                     </td>
                                     <td class="px-2 py-3">
                                         @if (!string.IsNullOrEmpty(employee.PhoneNumber))
                                         {
-                                            <a href="tel:@employee.PhoneNumber" class="text-decoration-none" style="white-space: nowrap;">
+                                            <a href="tel:@employee.PhoneNumber" class="text-decoration-none">
                                                 <i class="bi bi-telephone"></i> @employee.PhoneNumber
                                             </a>
                                         }
@@ -113,12 +119,14 @@
                                             <span class="text-muted">—</span>
                                         }
                                     </td>
-                                    <td class="px-2 py-3" style="white-space: nowrap;">
+                                    <td class="px-2 py-3">
                                         <i class="bi bi-calendar3"></i>
                                         @employee.HireDate.ToString("dd.MM.yyyy")
+                                        <br />
+                                        <small class="text-muted">@experienceText</small>
                                     </td>
                                     <td class="px-2 py-3">
-                                        <span class="fw-bold text-success" style="white-space: nowrap;">
+                                        <span class="fw-bold text-success">
                                             @employee.Salary.ToString("N0") ₽
                                         </span>
                                     </td>
@@ -152,24 +160,85 @@
 </div>
 
 <style>
-    .table-hover tbody tr:hover {
-        background-color: rgba(102, 126, 234, 0.05);
-        transition: all 0.3s ease;
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 0 0 2rem 2rem;
+        margin-top: -1.5rem;
     }
 
-    .badge {
-        font-weight: 500;
-        font-size: 0.8rem;
+    /* Убираем любые трансформации у всей таблицы и ее контейнера */
+    .table-responsive,
+    .card,
+    .card-body,
+    .table,
+    .table tbody,
+    .table tr,
+    .table td,
+    .table th {
+        transform: none !important;
+        transition: none !important;
     }
 
+        /* Строки меняют цвет при наведении - более темный серый */
+        .table tbody tr:hover {
+            background-color: #e0e0e0 !important;
+            transition: background-color 0.2s ease;
+        }
+
+    /* Кнопки двигаются при наведении */
+    .btn {
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    /* Кнопки в группе */
     .btn-group .btn {
-        transition: all 0.2s ease;
-        padding: 0.25rem 0.5rem;
+        transition: transform 0.2s ease, background-color 0.2s ease;
     }
 
         .btn-group .btn:hover {
             transform: translateY(-2px);
         }
+
+    /* Ссылки-кнопки */
+    a.btn {
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+        a.btn:hover {
+            transform: translateY(-2px);
+        }
+
+    /* Кнопки в карточках */
+    .btn-outline-info, .btn-outline-warning, .btn-outline-danger {
+        transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    }
+
+        .btn-outline-info:hover {
+            background: #0dcaf0;
+            border-color: #0dcaf0;
+            color: white;
+        }
+
+        .btn-outline-warning:hover {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: white;
+        }
+
+        .btn-outline-danger:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+    .badge {
+        font-weight: 500;
+        font-size: 0.8rem;
+    }
 
     .avatar-circle {
         width: 32px;
@@ -211,16 +280,16 @@
 
 <script>
     document.getElementById('searchInput')?.addEventListener('keyup', function () {
-        let searchText = this.value.toLowerCase();
-        let rows = document.querySelectorAll('.employee-row');
+        var searchText = this.value.toLowerCase();
+        var rows = document.querySelectorAll('.employee-row');
 
-        rows.forEach(row => {
-            let text = row.textContent.toLowerCase();
-            if (text.includes(searchText)) {
-                row.style.display = '';
+        for (var i = 0; i < rows.length; i++) {
+            var text = rows[i].textContent.toLowerCase();
+            if (text.indexOf(searchText) !== -1) {
+                rows[i].style.display = '';
             } else {
-                row.style.display = 'none';
+                rows[i].style.display = 'none';
             }
-        });
+        }
     });
 </script>

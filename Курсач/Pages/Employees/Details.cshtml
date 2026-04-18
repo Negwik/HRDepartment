@@ -1,13 +1,23 @@
 ﻿@page
+@using Курсач.Models
 @model Курсач.Pages.Employees.DetailsModel
 @{
     ViewData["Title"] = "Детали сотрудника";
     var isAdmin = User.IsInRole("Admin");
 }
 
+@functions {
+    public static string GetDisplayName(Enum value)
+    {
+        var field = value.GetType().GetField(value.ToString());
+        var attribute = field?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false).FirstOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
+        return attribute?.Name ?? value.ToString();
+    }
+}
+
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card shadow">
                 <div class="card-header bg-info text-white">
                     <h4 class="mb-0">
@@ -15,110 +25,198 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-sm-4">Фамилия</dt>
-                        <dd class="col-sm-8">@Model.Employee.LastName</dd>
+                    <ul class="nav nav-tabs mb-3" id="employeeTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">
+                                <i class="bi bi-person"></i> Личные данные
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="education-tab" data-bs-toggle="tab" data-bs-target="#education" type="button" role="tab">
+                                <i class="bi bi-mortarboard"></i> Образование
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="family-tab" data-bs-toggle="tab" data-bs-target="#family" type="button" role="tab">
+                                <i class="bi bi-heart"></i> Семья
+                            </button>
+                        </li>
+                    </ul>
 
-                        <dt class="col-sm-4">Имя</dt>
-                        <dd class="col-sm-8">@Model.Employee.FirstName</dd>
+                    <div class="tab-content">
+                        <!-- Личные данные -->
+                        <div class="tab-pane fade show active" id="personal" role="tabpanel">
+                            <dl class="row">
+                                <dt class="col-sm-4">Фамилия</dt>
+                                <dd class="col-sm-8">@Model.Employee.LastName</dd>
 
-                        <dt class="col-sm-4">Отчество</dt>
-                        <dd class="col-sm-8">@(Model.Employee.MiddleName ?? "—")</dd>
+                                <dt class="col-sm-4">Имя</dt>
+                                <dd class="col-sm-8">@Model.Employee.FirstName</dd>
 
-                        <dt class="col-sm-4">Дата рождения</dt>
-                        <dd class="col-sm-8">@Model.Employee.BirthDate.ToString("dd.MM.yyyy")</dd>
+                                <dt class="col-sm-4">Отчество</dt>
+                                <dd class="col-sm-8">@(Model.Employee.MiddleName ?? "—")</dd>
 
-                        <dt class="col-sm-4">Email</dt>
-                        <dd class="col-sm-8">@Model.Employee.Email</dd>
+                                <dt class="col-sm-4">Дата рождения</dt>
+                                <dd class="col-sm-8">@Model.Employee.BirthDate.ToString("dd.MM.yyyy")</dd>
 
-                        <dt class="col-sm-4">Телефон</dt>
-                        <dd class="col-sm-8">@(Model.Employee.PhoneNumber ?? "—")</dd>
+                                <dt class="col-sm-4">Email</dt>
+                                <dd class="col-sm-8">@Model.Employee.Email</dd>
 
-                        <dt class="col-sm-4">Дата приема</dt>
-                        <dd class="col-sm-8">@Model.Employee.HireDate.ToString("dd.MM.yyyy")</dd>
+                                <dt class="col-sm-4">Телефон</dt>
+                                <dd class="col-sm-8">@(Model.Employee.PhoneNumber ?? "—")</dd>
 
-                        <dt class="col-sm-4">Зарплата</dt>
-                        <dd class="col-sm-8">@Model.Employee.Salary.ToString("N0") ₽</dd>
+                                <dt class="col-sm-4">Гражданство</dt>
+                                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Employee.Citizenship) ? "—" : Model.Employee.Citizenship)</dd>
 
-                        <dt class="col-sm-4">Отдел</dt>
-                        <dd class="col-sm-8">@(Model.Employee.Department?.Name ?? "—")</dd>
+                                <dt class="col-sm-4">Адрес проживания</dt>
+                                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Employee.Address) ? "—" : Model.Employee.Address)</dd>
 
-                        <dt class="col-sm-4">Должность</dt>
-                        <dd class="col-sm-8">@(Model.Employee.Position?.Title ?? "—")</dd>
-                    </dl>
+                                <dt class="col-sm-4">Дата приема</dt>
+                                <dd class="col-sm-8">@Model.Employee.HireDate.ToString("dd.MM.yyyy")</dd>
 
-                    <!-- Отпуск -->
-                    <hr />
-                    <h5><i class="bi bi-sun"></i> Отпуск</h5>
-                    @if (Model.Employee.VacationStartDate.HasValue && Model.Employee.VacationEndDate.HasValue)
-                    {
-                        var today = DateTime.Today;
-                        var isOnVacation = today >= Model.Employee.VacationStartDate.Value && today <= Model.Employee.VacationEndDate.Value;
-                        <div class="alert @(isOnVacation ? "alert-warning" : "alert-info")">
-                            @if (isOnVacation)
-                            {
-                                <strong>Сотрудник в отпуске!</strong>
+                                <dt class="col-sm-4">Отдел</dt>
+                                <dd class="col-sm-8">@(Model.Employee.Department?.Name ?? "—")</dd>
 
-                                <br />
-                            }
-                            с @Model.Employee.VacationStartDate.Value.ToString("dd.MM.yyyy") по @Model.Employee.VacationEndDate.Value.ToString("dd.MM.yyyy")
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-secondary">Нет запланированного отпуска</div>
-                    }
+                                <dt class="col-sm-4">Должность</dt>
+                                <dd class="col-sm-8">@(Model.Employee.Position?.Title ?? "—")</dd>
 
-                    <!-- Курсы повышения квалификации -->
-                    <hr />
-                    <h5><i class="bi bi-mortarboard"></i> Повышение квалификации</h5>
-                    @if (Model.Employee.Qualifications != null && Model.Employee.Qualifications.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Курс</th>
-                                        <th>Даты</th>
-                                        <th>Статус</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var q in Model.Employee.Qualifications)
+                                <dt class="col-sm-4">Зарплата</dt>
+                                <dd class="col-sm-8">@Model.Employee.Salary.ToString("N0") ₽</dd>
+
+                                <dt class="col-sm-4">Инвалидность</dt>
+                                <dd class="col-sm-8">@GetDisplayName(Model.Employee.Disability)</dd>
+
+                                <!-- Отпуск -->
+                                <dt class="col-sm-4 mt-3 pt-3 border-top">Отпуск</dt>
+                                <dd class="col-sm-8 mt-3 pt-3 border-top">
+                                    @if (Model.Employee.VacationStartDate.HasValue && Model.Employee.VacationEndDate.HasValue)
                                     {
-                                        <tr>
-                                            <td>
-                                                <strong>@q.CourseName</strong>
-                                                @if (!string.IsNullOrEmpty(q.Organization))
-                                                {
-                                                    <br />
+                                        var today = DateTime.Today;
+                                        var isOnVacation = today >= Model.Employee.VacationStartDate.Value && today <= Model.Employee.VacationEndDate.Value;
+                                        if (isOnVacation)
+                                        {
+                                            <span class="badge bg-warning text-dark mb-2">СОТРУДНИК В ОТПУСКЕ</span>
 
-                                                    <small class="text-muted">@q.Organization</small>
-                                                }
-                                            </td>
-                                            <td>@q.StartDate.ToString("dd.MM.yyyy") - @q.EndDate.ToString("dd.MM.yyyy")</td>
-                                            <td>
-                                                @{
-                                                    string badgeClass = q.Status switch
-                                                    {
-                                                        Курсач.Models.QualificationStatus.Planned => "bg-secondary",
-                                                        Курсач.Models.QualificationStatus.InProgress => "bg-primary",
-                                                        Курсач.Models.QualificationStatus.Completed => "bg-success",
-                                                        _ => "bg-danger"
-                                                    };
-                                                }
-                                                <span class="badge @badgeClass">@q.Status</span>
-                                            </td>
-                                        </tr>
+                                            <br />
+                                        }
+                                        <span>Тип: <strong>@GetDisplayName(Model.Employee.VacationType)</strong></span>
+
+                                        <br />
+                                        <span>с <strong>@Model.Employee.VacationStartDate.Value.ToString("dd.MM.yyyy")</strong></span>
+
+                                        <br />
+                                        <span>по <strong>@Model.Employee.VacationEndDate.Value.ToString("dd.MM.yyyy")</strong></span>
+                                        var start = Model.Employee.VacationStartDate.Value;
+                                        var end = Model.Employee.VacationEndDate.Value;
+                                        var days = (end - start).Days + 1;
+                                        <br />
+
+                                        <span class="text-muted">Длительность: @days дн.</span>
                                     }
-                                </tbody>
-                            </table>
+                                    else
+                                    {
+                                        <span class="text-muted">Нет запланированного отпуска</span>
+                                    }
+                                </dd>
+
+                                <!-- Квалификация -->
+                                <dt class="col-sm-4 mt-3 pt-3 border-top">Повышение квалификации</dt>
+                                <dd class="col-sm-8 mt-3 pt-3 border-top">
+                                    @if (Model.Employee.Qualifications != null && Model.Employee.Qualifications.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Курс</th>
+                                                        <th>Даты</th>
+                                                        <th>Организация</th>
+                                                        <th>Статус</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var q in Model.Employee.Qualifications)
+                                                    {
+                                                        <tr>
+                                                            <td><strong>@q.CourseName</strong></td>
+                                                            <td>@q.StartDate.ToString("dd.MM.yyyy") - @q.EndDate.ToString("dd.MM.yyyy")</td>
+                                                            <td>@(string.IsNullOrEmpty(q.Organization) ? "—" : q.Organization)</td>
+                                                            <td>
+                                                                @{
+                                                                    string badgeClass = "bg-secondary";
+                                                                    string statusText = "Запланирован";
+                                                                    if (q.Status == QualificationStatus.InProgress)
+                                                                    {
+                                                                        badgeClass = "bg-primary";
+                                                                        statusText = "В процессе";
+                                                                    }
+                                                                    else if (q.Status == QualificationStatus.Completed)
+                                                                    {
+                                                                        badgeClass = "bg-success";
+                                                                        statusText = "Завершен";
+                                                                    }
+                                                                    else if (q.Status == QualificationStatus.Cancelled)
+                                                                    {
+                                                                        badgeClass = "bg-danger";
+                                                                        statusText = "Отменен";
+                                                                    }
+                                                                }
+                                                                <span class="badge @badgeClass rounded-pill px-3 py-2">@statusText</span>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Нет записей о повышении квалификации</span>
+                                    }
+                                </dd>
+                            </dl>
                         </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-secondary">Нет записей о повышении квалификации</div>
-                    }
+
+                        <!-- Образование -->
+                        <div class="tab-pane fade" id="education" role="tabpanel">
+                            <dl class="row">
+                                <dt class="col-sm-4">Образование</dt>
+                                <dd class="col-sm-8">@GetDisplayName(Model.Employee.Education)</dd>
+
+                                <dt class="col-sm-4">Специальность</dt>
+                                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Employee.Specialty) ? "—" : Model.Employee.Specialty)</dd>
+
+                                <dt class="col-sm-4">Учебное заведение</dt>
+                                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Employee.EducationalInstitution) ? "—" : Model.Employee.EducationalInstitution)</dd>
+
+                                <dt class="col-sm-4">Год окончания</dt>
+                                <dd class="col-sm-8">@(Model.Employee.GraduationYear?.ToString("yyyy") ?? "—")</dd>
+                            </dl>
+                        </div>
+
+                        <!-- Семья -->
+                        <div class="tab-pane fade" id="family" role="tabpanel">
+                            <dl class="row">
+                                <dt class="col-sm-4">Семейное положение</dt>
+                                <dd class="col-sm-8">@GetDisplayName(Model.Employee.MaritalStatus)</dd>
+
+                                <dt class="col-sm-4">Количество детей</dt>
+                                <dd class="col-sm-8">@Model.Employee.ChildrenCount</dd>
+
+                                <dt class="col-sm-4">Информация о детях</dt>
+                                <dd class="col-sm-8">
+                                    @if (string.IsNullOrEmpty(Model.Employee.ChildrenInfo))
+                                    {
+                                        <span>—</span>
+                                    }
+                                    else
+                                    {
+                                        <div style="white-space: pre-line;">@Model.Employee.ChildrenInfo</div>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-footer">
                     <div class="d-flex justify-content-between">
